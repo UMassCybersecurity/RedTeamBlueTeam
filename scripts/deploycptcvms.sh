@@ -1,8 +1,11 @@
 #!/bin/bash
 
-vm_ids=()
+# parameters: cptc year, start_index
+cptc_num=$1
+vms_start_index=$2
 
 # Read file line by line, add each ID to the vm_ids array
+vm_ids=()
 while read -r line; do 
   vm_ids+=("${line}")
 done < cptcvmslist.txt # TODO: make parameter 
@@ -10,13 +13,13 @@ done < cptcvmslist.txt # TODO: make parameter
 echo "VM IDs: ${vm_ids[@]}"
 
 # Loop through each VM ID and download, unzip 
-url_prefix="https://mirrors.rit.edu/cptc/cptc9/VMs/"
+url_prefix="https://mirrors.rit.edu/cptc/cptc${cptc_num}/VMs/"
 url_suffix=".vmdk.gz"
 
 for vm_id_index in "${!vm_ids[@]}"
 do
   vm_id="${vm_ids[vm_id_index]}"
-  pve_vm_id=$((vm_id_index + 100))
+  pve_vm_id=$((vm_id_index + vms_start_index))
   url="${url_prefix}${vm_id}${url_suffix}"
 
   echo "Downloading ${url}..."
