@@ -13,8 +13,9 @@ done < cptcvmslist.txt # TODO: make parameter
 echo "VM IDs: ${vm_ids[@]}"
 
 # Loop through each VM ID and download, unzip 
-url_prefix="https://mirrors.rit.edu/cptc/cptc${cptc_num}/VMs/"
-url_suffix=".vmdk.gz"
+url_prefix="https://mirrors.rit.edu/cptc/cptc${cptc_num}/virtual-machines/"
+# url_suffix=".vmdk.gz"
+url_suffix=".vmdk.7z"
 
 for vm_id_index in "${!vm_ids[@]}"
 do
@@ -23,10 +24,20 @@ do
   url="${url_prefix}${vm_id}${url_suffix}"
 
   echo "Downloading ${url}..."
-  curl --output "${vm_id}.vmdk.gz" "${url}"
+  # curl --output "${vm_id}.vmdk.gz" "${url}"
+  curl --output "${vm_id}.vmdk.7z" "${url}"
 
-  echo "Unzipping ${vm_id}.vmdk.gz..."
-  gunzip "${vm_id}.vmdk.gz" 
+  # echo "Unzipping ${vm_id}.vmdk.gz..."
+  # gunzip "${vm_id}.vmdk.gz" 
+
+  echo "Downloading p7zip-full..." 
+  apt update && apt install p7zip-full -y
+
+  echo "Unzipping ${vm_id}.vmdk.7z..."
+  7z x "${vm_id}.vmdk.7z"
+
+  echo "Removing original .7z file..."
+  rm "${vm_id}.vmdk.7z"
 
   echo "Converting ${vm_id}.vmdk to qcow2..."
   qemu-img convert -f vmdk -O qcow2 "${vm_id}.vmdk" "${vm_id}.qcow2"
