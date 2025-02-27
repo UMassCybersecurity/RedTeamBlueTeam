@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e # Exit immediately if any command fails 
+
 # parameters: cptc year, start_index
 cptc_num=$1
 vms_start_index=$2
